@@ -8,7 +8,21 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Medico 
 {
+    /**
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column
+     */
+    public int $id;
+
+    /**
+     * @ORM\Column
+     */
     public int $crm;
+
+    /**
+     * @ORM\Column
+     */
     public string $nome;
 
 }
