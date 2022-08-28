@@ -3,13 +3,14 @@
 namespace App\Controller;
 
 use  App\Entity\Medico;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 
-class MedicosController
+class MedicosController extends AbstractController
 {
     /**
      * @var EntityManagerInterface
@@ -25,7 +26,7 @@ class MedicosController
      * 
      * @Route("/medicos", methods={"POST"})
      */
-    public function novo(Request $request) : Response 
+    public function create(Request $request) : Response 
     {
         $corpoDaRequesicao = $request->getContent();
         $dadoEmJson = json_decode($corpoDaRequesicao);
@@ -37,6 +38,33 @@ class MedicosController
         $this->entityManager->flush();
 
         return new JsonResponse($medico);
+    }
+
+    /**
+     * @Route("/medicos", methods={"GET"})
+     */
+    public function index(): Response
+    {
+        $repositorioDeMedicos = $this
+            ->getDoctrine()
+            ->getRepository(Medico::class);
+        $medicoList = $repositorioDeMedicos->findAll();
+
+        return new JsonResponse($medicoList);
+    }
+
+    /**
+     * @Route("medicos/{id}", methods={"GET"})
+     */
+    public function show(Request $request): Response
+    {
+        $repositorioDeMedico = $this
+            ->getDoctrine()
+            ->getRepository(Medico::class);
+        $medico = $repositorioDeMedico->find($request->attributes->get('id'));
+        $codigoDeRetorno = is_null($medico) ? Response::HTTP_NO_CONTENT : 200;
+
+        return new JsonResponse($medico, $codigoDeRetorno);
     }
 
 }
