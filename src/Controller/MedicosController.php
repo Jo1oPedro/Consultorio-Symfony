@@ -67,4 +67,31 @@ class MedicosController extends AbstractController
         return new JsonResponse($medico, $codigoDeRetorno);
     }
 
+    /**
+     * @Route("/medicos/{id}", methods={"PUT"})
+     */
+    public function update(int $id, Request $request): Response
+    {
+        $dadoEmJson = json_decode($request->getContent());
+        $medicoEnviado = new Medico();
+        $medicoEnviado->nome = $dadoEmJson->nome;
+        $medicoEnviado->crm = $dadoEmJson->crm;
+
+        $repositorioDeMedico = $this
+            ->getDoctrine()
+            ->getRepository(Medico::class);
+        $medicoExistente = $repositorioDeMedico->find($id);
+
+        if(is_null($medicoExistente)) {
+            return new Response('',Response::HTTP_NOT_FOUND);
+        }
+
+        $medicoExistente->nome = $medicoEnviado->nome;
+        $medicoExistente->crm = $medicoEnviado->crm;
+
+        $this->entityManager->flush();
+
+        return new JsonResponse($medicoExistente);
+    }
+
 }
