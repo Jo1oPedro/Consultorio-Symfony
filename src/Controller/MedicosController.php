@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use  App\Entity\Medico;
+use App\Helper\MedicoFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,9 +18,15 @@ class MedicosController extends AbstractController
      */
     private EntityManagerInterface $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    /**
+     * @var MedicoFactory
+     */
+    private MedicoFactory $medicoFactory;
+
+    public function __construct(EntityManagerInterface $entityManager, MedicoFactory $medicoFactory)
     {
         $this->entityManager = $entityManager;
+        $this->medicoFactory = $medicoFactory;
     }
 
     /**
@@ -28,12 +35,9 @@ class MedicosController extends AbstractController
      */
     public function create(Request $request) : Response 
     {
-        $corpoDaRequesicao = $request->getContent();
-        $dadoEmJson = json_decode($corpoDaRequesicao);
-        $medico = new Medico();
-        $medico->crm = $dadoEmJson->crm;
-        $medico->nome = $dadoEmJson->nome;
+        //$medico = MedicoFactory::criarMedico($request->getContent());
 
+        $medico = $this->medicoFactory->criarMedico($request->getContent());
         $this->entityManager->persist($medico);
         $this->entityManager->flush();
 
@@ -58,10 +62,7 @@ class MedicosController extends AbstractController
      */
     public function show(Request $request): Response
     {
-        $repositorioDeMedico = $this
-            ->getDoctrine()
-            ->getRepository(Medico::class);
-        $medico = $repositorioDeMedico->find($request->attributes->get('id'));
+        $medico = $this->buscaMedico($request->attributes->get('id'));
         $codigoDeRetorno = is_null($medico) ? Response::HTTP_NO_CONTENT : 200;
 
         return new JsonResponse($medico, $codigoDeRetorno);
@@ -72,15 +73,9 @@ class MedicosController extends AbstractController
      */
     public function update(int $id, Request $request): Response
     {
-        $dadoEmJson = json_decode($request->getContent());
-        $medicoEnviado = new Medico();
-        $medicoEnviado->nome = $dadoEmJson->nome;
-        $medicoEnviado->crm = $dadoEmJson->crm;
+       $medicoEnviado = $this->medicoFactory->criarMedico($request->getContent());
 
-        $repositorioDeMedico = $this
-            ->getDoctrine()
-            ->getRepository(Medico::class);
-        $medicoExistente = $repositorioDeMedico->find($id);
+        $medicoExistente = $this->buscaMedico($id);
 
         if(is_null($medicoExistente)) {
             return new Response('',Response::HTTP_NOT_FOUND);
@@ -94,4 +89,42 @@ class MedicosController extends AbstractController
         return new JsonResponse($medicoExistente);
     }
 
+    /**
+     * @Route("medicos/{id}", methods={"DELETE"})
+     */
+    public function delete(int $id): Response
+    {
+        $medico = $this->buscaMedicoDeUmaFormaMaisEficaz($id);
+        $this->entityManager->remove($medico);
+        $this->entityManager->flush();
+
+        return new Response('', Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @param int $id
+     * @return mixed|object|null
+     */
+    public function buscaMedico(int $id)
+    {
+        $repositorioDeMedico = $this
+            ->getDoctrine()
+            ->getRepository(Medico::class);
+        $medico = $repositorioDeMedico->find($id);
+        return $medico;
+    }
+
+    /**
+     * @param int $id
+     * @return Medico|mixed|object|null
+     * @throws \Doctrine\ORM\Exception\ORMException
+     */
+    public function buscaMedicoDeUmaFormaMaisEficaz(int $id)
+    {
+        // Evita que façamos qum select para só depois realizar as ações desejadas
+        // Dessa forma a gente cria uma entidade gerenciada pelo Doctrine, diretamente no código, sem buscar no banco
+        return $repoositorioDeMedico = $this
+            ->entityManager
+            ->getReference(Medico::class, $id);
+    }
 }
