@@ -81,8 +81,9 @@ class MedicosController extends AbstractController
             return new Response('',Response::HTTP_NOT_FOUND);
         }
 
-        $medicoExistente->nome = $medicoEnviado->nome;
-        $medicoExistente->crm = $medicoEnviado->crm;
+        $medicoExistente
+            ->setNome($medicoEnviado->getNome())
+            ->setCrm($medicoEnviado->getCrm());
 
         $this->entityManager->flush();
 
@@ -103,7 +104,7 @@ class MedicosController extends AbstractController
 
     /**
      * @param int $id
-     * @return mixed|object|null
+     * @return Medico\mixed|object|null
      */
     public function buscaMedico(int $id)
     {
