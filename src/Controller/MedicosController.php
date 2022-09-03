@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Especialidade;
 use  App\Entity\Medico;
 use App\Helper\MedicoFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -127,5 +128,18 @@ class MedicosController extends AbstractController
         return $repoositorioDeMedico = $this
             ->entityManager
             ->getReference(Medico::class, $id);
+    }
+
+    /**
+     * @Route("especialidades/{especialidade_id}/medicos", methods={"GET"})
+     * @param int $especialidadeId
+     * @return Response
+     */
+    public function getMedicoPorEspecialidade(int $especialidade_id): Response
+    {
+        $medicoRepository = $this->getDoctrine()->getRepository(Medico::class);
+        $medicos = $medicoRepository->findBy(["especialidade" => $especialidade_id]);
+
+        return new JsonResponse($medicos);
     }
 }
