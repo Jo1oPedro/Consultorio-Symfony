@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Especialidade;
 use  App\Entity\Medico;
 use App\Helper\MedicoFactory;
+use App\Repository\MedicosRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,11 +24,17 @@ class MedicosController extends AbstractController
      * @var MedicoFactory
      */
     private MedicoFactory $medicoFactory;
+    private MedicosRepository $medicosRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, MedicoFactory $medicoFactory)
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        MedicoFactory $medicoFactory,
+        MedicosRepository $medicosRepository
+    )
     {
         $this->entityManager = $entityManager;
         $this->medicoFactory = $medicoFactory;
+        $this->medicosRepository = $medicosRepository;
     }
 
     /**
@@ -137,8 +144,7 @@ class MedicosController extends AbstractController
      */
     public function getMedicoPorEspecialidade(int $especialidade_id): Response
     {
-        $medicoRepository = $this->getDoctrine()->getRepository(Medico::class);
-        $medicos = $medicoRepository->findBy(["especialidade" => $especialidade_id]);
+        $medicos = $this->medicosRepository->findBy(["especialidade" => $especialidade_id]);
 
         return new JsonResponse($medicos);
     }
