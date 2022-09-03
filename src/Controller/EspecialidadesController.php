@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Especialidade;
+use App\Entity\Medico;
 use App\Repository\EspecialidadeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -10,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Response;
 
 class EspecialidadesController extends AbstractController
 {
@@ -54,19 +56,54 @@ class EspecialidadesController extends AbstractController
     }
 
     /**
-     * @Route("especialidades/{id}, methods={PUT})
+     * @Route("especialidades/{id}", methods={"PUT"})
      * @param Request $request
-     * @return void
+     * @return Response
      */
-    public function update(Especialidade $especialidade, Request $request)
+    public function update(?Especialidade $especialidade, Request $request) : Response
     {
-        dump($especialidade);
-        exit();
         //$especialidade = $this->especialidadeRepository($request->get("especialidadeId"));
+        if($especialidade) {
+            $dadosJson = json_decode($request->getContent());
+            $especialidade->setDescricao($dadosJson->descricao);
+            $this->entityManager->flush();
+            return new JsonResponse($especialidade);
+        }
 
-        //$especialidade->descricao = $requetst
+        return new Response('', Response::HTTP_NOT_FOUND);
 
-        dump($especialidade);
-        exit();
+    }
+
+    /**
+     * @Route("especialidades/{id}", methods={"GET"})
+     * @param Especialidade $especialidade
+     * @return Response
+     */
+    public function show(?Especialidade $especialidade)
+    {
+        if($especialidade) {
+            return new JsonResponse($especialidade, 200);
+        }
+        return new Response('', Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Route("especialidades/{id}", methods={"DELETE"})
+     * @param Especialidade|null $especialidade
+     * @return Response
+     */
+    public function destroy(?Especialidade $especialidade) {
+
+        $medicosComEspecialidade = $this->doctrine->getRepository(Medico::class);
+        $medicosComEspecialidade = $medicosComEspecialidade->findBy(["especialidade" => $especialidade->getId()]);
+
+        foreach($medicosComEspecialidade as $medico) {
+            $this->entityManager->remove($medico);
+            $this->entityManager->flush();
+        }
+        $this->entityManager->remove($especialidade);
+        $this->entityManager->flush();
+
+        return new Response('', Response::HTTP_NO_CONTENT);
     }
 }
