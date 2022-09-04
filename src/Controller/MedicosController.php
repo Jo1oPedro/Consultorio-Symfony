@@ -68,13 +68,13 @@ class MedicosController extends BaseController
     /**
      * @Route("medicos/{id}", methods={"GET"})
      */
-    public function show(Request $request): Response
+    /*public function show(Request $request): Response
     {
         $medico = $this->buscaMedico($request->attributes->get('id'));
         $codigoDeRetorno = is_null($medico) ? Response::HTTP_NO_CONTENT : 200;
 
         return new JsonResponse($medico, $codigoDeRetorno);
-    }
+    }*/
 
     /**
      * @Route("/medicos/{id}", methods={"PUT"})

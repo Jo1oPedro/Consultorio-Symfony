@@ -85,13 +85,13 @@ class EspecialidadesController extends BaseController
      * @param Especialidade $especialidade
      * @return Response
      */
-    public function show(?Especialidade $especialidade)
+    /*public function show(?Especialidade $especialidade)
     {
         if($especialidade) {
             return new JsonResponse($especialidade, 200);
         }
         return new Response('', Response::HTTP_NO_CONTENT);
-    }
+    }*/
 
     /**
      * @Route("especialidades/{id}", methods={"DELETE"})
