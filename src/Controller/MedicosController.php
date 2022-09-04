@@ -6,14 +6,13 @@ use App\Entity\Especialidade;
 use  App\Entity\Medico;
 use App\Helper\MedicoFactory;
 use App\Repository\MedicosRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 
-class MedicosController extends AbstractController
+class MedicosController extends BaseController
 {
     /**
      * @var EntityManagerInterface
@@ -35,6 +34,7 @@ class MedicosController extends AbstractController
         $this->entityManager = $entityManager;
         $this->medicoFactory = $medicoFactory;
         $this->medicosRepository = $medicosRepository;
+        parent::__construct($medicosRepository);
     }
 
     /**
@@ -55,7 +55,7 @@ class MedicosController extends AbstractController
     /**
      * @Route("/medicos", methods={"GET"})
      */
-    public function index(): Response
+    /*public function index(): Response
     {
         $repositorioDeMedicos = $this
             ->getDoctrine()
@@ -63,7 +63,7 @@ class MedicosController extends AbstractController
         $medicoList = $repositorioDeMedicos->findAll();
 
         return new JsonResponse($medicoList);
-    }
+    }*/
 
     /**
      * @Route("medicos/{id}", methods={"GET"})

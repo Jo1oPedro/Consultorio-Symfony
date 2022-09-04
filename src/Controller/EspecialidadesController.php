@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 
-class EspecialidadesController extends AbstractController
+class EspecialidadesController extends BaseController
 {
 
     private EntityManagerInterface $entityManager;
@@ -26,19 +26,25 @@ class EspecialidadesController extends AbstractController
         $this->doctrine = $doctrine;
         //$this->>doctrine->getRepository(Especialidade::class);
         $this->especialidadeRepository = $especialidadeRepository;
+        parent::__construct($especialidadeRepository);
     }
 
     /**
      * @Route("especialidades", methods={"GET"})
      * @return JsonResponse
      */
-    public function index()
+    /*public function index()
     {
         $especialidades = $this->especialidadeRepository->findAll();
         return new JsonResponse(["especialidade" => $especialidades]);
-    }
+    }*/
 
-    #[Route('/especialidades', methods: ['POST'])]
+    /**
+     * @Route("/especialidades", methods={"POST"})
+     * @param Request $request
+     * @return JsonResponse
+     */
+    //#[Route('/especialidades', methods: ['POST'])]
     public function store(Request $request): JsonResponse
     {
         $dadosRequest = $request->getContent();
