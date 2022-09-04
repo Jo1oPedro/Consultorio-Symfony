@@ -14,6 +14,12 @@ especialidade:
   methods:
     - GET
 
+remove_especialidade:
+  path: /especialidades/{id}
+  controller: App\Controller\EspecialidadesController::destroy
+  methods:
+    - DELETE
+
 medicos:
   path: /medicos
   controller: App\Controller\MedicosController::index
@@ -23,5 +29,11 @@ medicos:
 medico:
   path: /medicos/{id}
   controller: App\Controller\MedicosController::show
+  methods:
+    - GET
+
+remove_medico:
+  path: /medicos/{id}
+  controller: App\Controller\MedicosController::destroy
   methods:
     - GET

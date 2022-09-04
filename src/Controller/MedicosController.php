@@ -17,24 +17,20 @@ class MedicosController extends BaseController
     /**
      * @var EntityManagerInterface
      */
-    private EntityManagerInterface $entityManager;
+    //private EntityManagerInterface $entityManager;
 
     /**
      * @var MedicoFactory
      */
     private MedicoFactory $medicoFactory;
-    private MedicosRepository $medicosRepository;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         MedicoFactory $medicoFactory,
-        MedicosRepository $medicosRepository
-    )
-    {
-        $this->entityManager = $entityManager;
+        MedicosRepository $repository
+    ) {
         $this->medicoFactory = $medicoFactory;
-        $this->medicosRepository = $medicosRepository;
-        parent::__construct($medicosRepository);
+        parent::__construct($repository, $entityManager);
     }
 
     /**
@@ -144,7 +140,7 @@ class MedicosController extends BaseController
      */
     public function getMedicoPorEspecialidade(int $especialidade_id): Response
     {
-        $medicos = $this->medicosRepository->findBy(["especialidade" => $especialidade_id]);
+        $medicos = $this->repository->findBy(["especialidade" => $especialidade_id]);
 
         return new JsonResponse($medicos);
     }

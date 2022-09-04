@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,11 +12,15 @@ abstract class BaseController extends AbstractController
 {
 
 
-    private ObjectRepository $repository;
+    protected ObjectRepository $repository;
+    protected EntityManagerInterface $entityManager;
 
-    public function __construct(ObjectRepository $repository)
-    {
+    public function __construct(
+        ObjectRepository $repository,
+        EntityManagerInterface $entityManager
+    ) {
         $this->repository = $repository;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -36,6 +41,15 @@ abstract class BaseController extends AbstractController
         if($object) {
             return new JsonResponse($object);
         }
+        return new Response('', Response::HTTP_NO_CONTENT);
+    }
+
+    public function destroy(int $id): Response
+    {
+        $object = $this->repository->find($id);
+        $this->entityManager->remove($object);
+        $this->entityManager->flush();
+
         return new Response('', Response::HTTP_NO_CONTENT);
     }
 

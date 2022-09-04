@@ -16,17 +16,18 @@ use Symfony\Component\HttpFoundation\Response;
 class EspecialidadesController extends BaseController
 {
 
-    private EntityManagerInterface $entityManager;
-    private ManagerRegistry $doctrine;
-    private EspecialidadeRepository $especialidadeRepository;
+    //private EntityManagerInterface $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager, ManagerRegistry $doctrine, EspecialidadeRepository $especialidadeRepository)
-    {
-        $this->entityManager = $entityManager;
+    private ManagerRegistry $doctrine;
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ManagerRegistry $doctrine,
+        EspecialidadeRepository $especialidadeRepository
+    ) {
         $this->doctrine = $doctrine;
         //$this->>doctrine->getRepository(Especialidade::class);
-        $this->especialidadeRepository = $especialidadeRepository;
-        parent::__construct($especialidadeRepository);
+        parent::__construct($especialidadeRepository, $entityManager);
     }
 
     /**
@@ -94,11 +95,11 @@ class EspecialidadesController extends BaseController
     }*/
 
     /**
-     * @Route("especialidades/{id}", methods={"DELETE"})
+     * @Route("especialidades/{especialidade}", methods={"DELETE"})
      * @param Especialidade|null $especialidade
      * @return Response
      */
-    public function destroy(?Especialidade $especialidade) {
+    /*public function destroy(?Especialidade $especialidade) {
 
         $medicosComEspecialidade = $this->doctrine->getRepository(Medico::class);
         $medicosComEspecialidade = $medicosComEspecialidade->findBy(["especialidade" => $especialidade->getId()]);
@@ -111,5 +112,5 @@ class EspecialidadesController extends BaseController
         $this->entityManager->flush();
 
         return new Response('', Response::HTTP_NO_CONTENT);
-    }
+    }*/
 }
