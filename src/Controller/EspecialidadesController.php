@@ -118,8 +118,15 @@ class EspecialidadesController extends BaseController
         return new Response('', Response::HTTP_NO_CONTENT);
     }*/
 
-    public function atualizaEntidadeExistente(\JsonSerializable $entidadeExistente, Request $request): \JsonSerializable
-    {
+    /**
+     * @param Especialidade $entidadeExistente
+     * @param Request $request
+     * @return Especialidade
+     */
+    public function atualizaEntidadeExistente(
+        \JsonSerializable $entidadeExistente,
+        Request $request
+    ): \JsonSerializable {
         $dadosEmJson = json_decode($request->getContent());
         return $entidadeExistente->setDescricao($dadosEmJson->descricao);
     }

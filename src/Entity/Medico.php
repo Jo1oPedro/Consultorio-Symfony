@@ -87,7 +87,6 @@ class Medico implements \JsonSerializable
     public function setEspecialidade(?Especialidade $especialidade): self
     {
         $this->especialidade = $especialidade;
-
         return $this;
     }
 

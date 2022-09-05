@@ -55,7 +55,7 @@ abstract class BaseController extends AbstractController
      * @param Request $request
      * @return JsonResponse
      */
-    public function update(int $id, Request $request): JsonResponse
+    public function update(int $id, Request $request): Response
     {
         $entity = $this->repository->find($id);
 

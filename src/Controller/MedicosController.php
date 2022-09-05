@@ -150,8 +150,15 @@ class MedicosController extends BaseController
         return new JsonResponse($medicos);
     }
 
-    public function atualizaEntidadeExistente(\JsonSerializable $entidadeExistente, Request $request): \JsonSerializable
-    {
+    /**
+     * @param Medico $entidadeExistente
+     * @param Request $request
+     * @return Medico
+     */
+    public function atualizaEntidadeExistente(
+        \JsonSerializable $entidadeExistente,
+        Request $request
+    ): \JsonSerializable {
         $dadosEmJson = json_decode($request->getContent());
         $especialidade = $this->especialidadeRepository->find($dadosEmJson->especialidadeId);
         return $entidadeExistente->setNome($dadosEmJson->nome)
