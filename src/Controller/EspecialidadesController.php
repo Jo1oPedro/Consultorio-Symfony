@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Especialidade;
 use App\Entity\Medico;
+use App\Helper\EspecialidadeFactory;
 use App\Repository\EspecialidadeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -19,15 +20,18 @@ class EspecialidadesController extends BaseController
     //private EntityManagerInterface $entityManager;
 
     private ManagerRegistry $doctrine;
+    //private EspecialidadeFactory $factory;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         ManagerRegistry $doctrine,
-        EspecialidadeRepository $especialidadeRepository
+        EspecialidadeRepository $especialidadeRepository,
+        EspecialidadeFactory $especialidadeFactory,
     ) {
         $this->doctrine = $doctrine;
         //$this->>doctrine->getRepository(Especialidade::class);
-        parent::__construct($especialidadeRepository, $entityManager);
+        parent::__construct($especialidadeRepository, $entityManager, $especialidadeFactory);
+        //$this->factory = $especialidadeFactory;
     }
 
     /**
@@ -46,7 +50,7 @@ class EspecialidadesController extends BaseController
      * @return JsonResponse
      */
     //#[Route('/especialidades', methods: ['POST'])]
-    public function store(Request $request): JsonResponse
+    /*public function store(Request $request): JsonResponse
     {
         $dadosRequest = $request->getContent();
         $dadosEmJson = json_decode($dadosRequest);
@@ -60,14 +64,14 @@ class EspecialidadesController extends BaseController
         return $this->json([
             $especialidade,
         ]);
-    }
+    }*/
 
     /**
      * @Route("especialidades/{id}", methods={"PUT"})
      * @param Request $request
      * @return Response
      */
-    public function update(?Especialidade $especialidade, Request $request) : Response
+    /*public function update(?Especialidade $especialidade, Request $request) : Response
     {
         //$especialidade = $this->especialidadeRepository($request->get("especialidadeId"));
         if($especialidade) {
@@ -79,7 +83,7 @@ class EspecialidadesController extends BaseController
 
         return new Response('', Response::HTTP_NOT_FOUND);
 
-    }
+    }*/
 
     /**
      * @Route("especialidades/{id}", methods={"GET"})
@@ -113,4 +117,10 @@ class EspecialidadesController extends BaseController
 
         return new Response('', Response::HTTP_NO_CONTENT);
     }*/
+
+    public function atualizaEntidadeExistente(\JsonSerializable $entidadeExistente, Request $request): \JsonSerializable
+    {
+        $dadosEmJson = json_decode($request->getContent());
+        return $entidadeExistente->setDescricao($dadosEmJson->descricao);
+    }
 }

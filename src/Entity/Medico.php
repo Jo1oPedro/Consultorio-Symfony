@@ -75,12 +75,16 @@ class Medico implements \JsonSerializable
      */
     private $especialidade;
 
-    public function getEspecialidade(): ?especialidade
+    public function getEspecialidade(): ?Especialidade
     {
         return $this->especialidade;
     }
 
-    public function setEspecialidade(?especialidade $especialidade): self
+    /**
+     * @param Especialidade|null $especialidade
+     * @return $this
+     */
+    public function setEspecialidade(?Especialidade $especialidade): self
     {
         $this->especialidade = $especialidade;
 

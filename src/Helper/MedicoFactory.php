@@ -5,7 +5,7 @@ namespace App\Helper;
 use App\Entity\Medico;
 use App\Repository\EspecialidadeRepository;
 
-class MedicoFactory
+class MedicoFactory implements EntidadeFactory
 {
 
     private EspecialidadeRepository $especialidadeRepository;
@@ -16,7 +16,11 @@ class MedicoFactory
         $this->especialidadeRepository = $especialidadeRepository;
     }
 
-    public function criarMedico(string $json): Medico
+    /**
+     * @param string $json
+     * @return Medico
+     */
+    public function criaEntidade(string $json): Medico
     {
         $dadoEmJson = json_decode($json);
         $especialidadeId = $dadoEmJson->especialidadeId;

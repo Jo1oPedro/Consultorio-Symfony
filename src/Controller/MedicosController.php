@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Entity\Especialidade;
 use  App\Entity\Medico;
 use App\Helper\MedicoFactory;
+use App\Repository\EspecialidadeRepository;
 use App\Repository\MedicosRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,35 +20,38 @@ class MedicosController extends BaseController
      * @var EntityManagerInterface
      */
     //private EntityManagerInterface $entityManager;
+    private EspecialidadeRepository $especialidadeRepository;
 
     /**
      * @var MedicoFactory
      */
-    private MedicoFactory $medicoFactory;
+    //private MedicoFactory $factory;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         MedicoFactory $medicoFactory,
-        MedicosRepository $repository
+        MedicosRepository $repository,
+        EspecialidadeRepository $especialidadeRepository
     ) {
-        $this->medicoFactory = $medicoFactory;
-        parent::__construct($repository, $entityManager);
+        //$this->factory = $medicoFactory;
+        parent::__construct($repository, $entityManager, $medicoFactory);
+        $this->especialidadeRepository = $especialidadeRepository;
     }
 
     /**
      * 
      * @Route("/medicos", methods={"POST"})
      */
-    public function create(Request $request) : Response 
+    /*public function create(Request $request) : Response
     {
         //$medico = MedicoFactory::criarMedico($request->getContent());
 
-        $medico = $this->medicoFactory->criarMedico($request->getContent());
+        $medico = $this->factory->criarMedico($request->getContent());
         $this->entityManager->persist($medico);
         $this->entityManager->flush();
 
         return new JsonResponse($medico);
-    }
+    }*/
 
     /**
      * @Route("/medicos", methods={"GET"})
@@ -75,9 +80,9 @@ class MedicosController extends BaseController
     /**
      * @Route("/medicos/{id}", methods={"PUT"})
      */
-    public function update(int $id, Request $request): Response
+    /*public function update(int $id, Request $request): Response
     {
-       $medicoEnviado = $this->medicoFactory->criarMedico($request->getContent());
+       $medicoEnviado = $this->factory->criarMedico($request->getContent());
 
         $medicoExistente = $this->buscaMedico($id);
 
@@ -92,7 +97,7 @@ class MedicosController extends BaseController
         $this->entityManager->flush();
 
         return new JsonResponse($medicoExistente);
-    }
+    }*/
 
     /**
      * @Route("medicos/{id}", methods={"DELETE"})
@@ -143,5 +148,14 @@ class MedicosController extends BaseController
         $medicos = $this->repository->findBy(["especialidade" => $especialidade_id]);
 
         return new JsonResponse($medicos);
+    }
+
+    public function atualizaEntidadeExistente(\JsonSerializable $entidadeExistente, Request $request): \JsonSerializable
+    {
+        $dadosEmJson = json_decode($request->getContent());
+        $especialidade = $this->especialidadeRepository->find($dadosEmJson->especialidadeId);
+        return $entidadeExistente->setNome($dadosEmJson->nome)
+                        ->setCrm($dadosEmJson->crm)
+                        ->setEspecialidade($especialidade);
     }
 }

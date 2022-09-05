@@ -20,6 +20,18 @@ remove_especialidade:
   methods:
     - DELETE
 
+cria_especialidade:
+  path: /especialidades
+  controller: App\Controller\EspecialidadesController::store
+  methods:
+    - POST
+
+atualiza_especialidade:
+  path: /especialidades/{id}
+  controller: App\Controller\EspecialidadesController::update
+  methods:
+    - PUT
+
 medicos:
   path: /medicos
   controller: App\Controller\MedicosController::index
@@ -37,3 +49,15 @@ remove_medico:
   controller: App\Controller\MedicosController::destroy
   methods:
     - GET
+
+cria_medico:
+  path: /medicos
+  controller: App\Controller\MedicosController::store
+  methods:
+    - POST
+
+atualiza_medico:
+  path: /medicos/{id}
+  controller: App\Controller\MedicosController::update
+  methods:
+    - PUT
