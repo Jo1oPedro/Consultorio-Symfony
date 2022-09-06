@@ -31,9 +31,12 @@ abstract class BaseController extends AbstractController
     /**
      * @return JsonResponse
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $entityList = $this->repository->findAll();
+        $informacoesDeOrdenacao = $request->query->get('sort');
+        $queryStringFilter = $request->query->all();
+        unset($queryStringFilter['sort']);
+        $entityList = $this->repository->findBy($queryStringFilter, $informacoesDeOrdenacao);
         return new JsonResponse($entityList);
     }
 
