@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Especialidade;
 use App\Entity\Medico;
 use App\Helper\EspecialidadeFactory;
+use App\Helper\EstratorDeDadosDoRequest;
 use App\Repository\EspecialidadeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -27,10 +28,11 @@ class EspecialidadesController extends BaseController
         ManagerRegistry $doctrine,
         EspecialidadeRepository $especialidadeRepository,
         EspecialidadeFactory $especialidadeFactory,
+        EstratorDeDadosDoRequest $estratorDeDadosDoRequest,
     ) {
         $this->doctrine = $doctrine;
         //$this->>doctrine->getRepository(Especialidade::class);
-        parent::__construct($especialidadeRepository, $entityManager, $especialidadeFactory);
+        parent::__construct($especialidadeRepository, $entityManager, $especialidadeFactory, $estratorDeDadosDoRequest);
         //$this->factory = $especialidadeFactory;
     }
 

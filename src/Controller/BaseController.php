@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Helper\EntidadeFactory;
+use App\Helper\EstratorDeDadosDoRequest;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,15 +18,18 @@ abstract class BaseController extends AbstractController
     protected ObjectRepository $repository;
     protected EntityManagerInterface $entityManager;
     protected EntidadeFactory $entidadeFactory;
+    private EstratorDeDadosDoRequest $estratorDeDadosDoRequest;
 
     public function __construct(
         ObjectRepository $repository,
         EntityManagerInterface $entityManager,
-        EntidadeFactory $entidadeFactory
+        EntidadeFactory $entidadeFactory,
+        EstratorDeDadosDoRequest $estratorDeDadosDoRequest,
     ) {
         $this->repository = $repository;
         $this->entityManager = $entityManager;
         $this->entidadeFactory = $entidadeFactory;
+        $this->estratorDeDadosDoRequest = $estratorDeDadosDoRequest;
     }
 
     /**
@@ -33,9 +37,8 @@ abstract class BaseController extends AbstractController
      */
     public function index(Request $request): JsonResponse
     {
-        $informacoesDeOrdenacao = $request->query->get('sort');
-        $queryStringFilter = $request->query->all();
-        unset($queryStringFilter['sort']);
+        $informacoesDeOrdenacao = $this->estratorDeDadosDoRequest->buscaDadosOrdenacao($request);
+        $queryStringFilter = $this->estratorDeDadosDoRequest->buscaDadosFiltro($request);
         $entityList = $this->repository->findBy($queryStringFilter, $informacoesDeOrdenacao);
         return new JsonResponse($entityList);
     }

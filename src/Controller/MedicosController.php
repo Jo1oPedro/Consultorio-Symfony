@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Especialidade;
 use  App\Entity\Medico;
+use App\Helper\EstratorDeDadosDoRequest;
 use App\Helper\MedicoFactory;
 use App\Repository\EspecialidadeRepository;
 use App\Repository\MedicosRepository;
@@ -31,10 +32,11 @@ class MedicosController extends BaseController
         EntityManagerInterface $entityManager,
         MedicoFactory $medicoFactory,
         MedicosRepository $repository,
-        EspecialidadeRepository $especialidadeRepository
+        EspecialidadeRepository $especialidadeRepository,
+        EstratorDeDadosDoRequest $estratorDeDadosDoRequest
     ) {
         //$this->factory = $medicoFactory;
-        parent::__construct($repository, $entityManager, $medicoFactory);
+        parent::__construct($repository, $entityManager, $medicoFactory, $estratorDeDadosDoRequest);
         $this->especialidadeRepository = $especialidadeRepository;
     }
 
