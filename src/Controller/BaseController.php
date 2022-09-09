@@ -81,17 +81,34 @@ abstract class BaseController extends AbstractController
      */
     public function update(int $id, Request $request): Response
     {
-        $entity = $this->repository->find($id);
+        try {
+            $entity = $this->repository->find($id);
 
-        if(is_null($entity)) {
-            return new Response('', Response::HTTP_NOT_FOUND);
+            if(is_null($entity)) {
+                throw new \InvalidArgumentException();
+            }
+
+            $entity = $this->atualizaEntidadeExistente($entity, $request);
+
+            $this->entityManager->flush();
+
+            $fabricaResposta = new ResponseFactory(
+                true,
+                conteudoResposta: $entity,
+                statusResposta: Response::HTTP_OK,
+            );
+
+            return new JsonResponse($entity);
+        } catch (\InvalidArgumentException $ex) {
+            $fabricaResposta = new ResponseFactory(
+                false,
+                conteudoResposta: 'Recurso não encontrado',
+                statusResposta: Response::HTTP_NOT_FOUND
+            );
+
+            return $fabricaResposta->getResponse();
         }
 
-        $entity = $this->atualizaEntidadeExistente($entity, $request);
-
-        $this->entityManager->flush();
-
-        return new JsonResponse($entity);
     }
 
     /**
