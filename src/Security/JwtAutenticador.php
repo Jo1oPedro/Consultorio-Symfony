@@ -46,7 +46,6 @@ class JwtAutenticador extends AbstractGuardAuthenticator
         try {
             return JWT::decode($token, new Key('chave', 'HS256'));
         } catch (\Exception $e) {
-            dump("entrou");
             return false;
         }
 
