@@ -2,6 +2,7 @@
 
 namespace App\EventListeners;
 
+use App\Entity\HypermidiaResponse;
 use App\Helper\ResponseFactory;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,9 +25,9 @@ class ExceptionHandler implements EventSubscriberInterface
     public function handle404Exception(ExceptionEvent $event)
     {
         if($event->getThrowable() instanceof NotFoundHttpException) {
-            $event->setResponse(new JsonResponse([
-                'Mensagem' => new ResponseFactory(),
-            ]));
+            $response = HypermidiaResponse::fromError($event->getThrowable())->getResponse();
+            $response->setStatusCode(404);
+            $event->setResponse($response);
             /*
             //Caso queira redirecionar para outra rota caso a rota digitado pelo usuario não existe
             $event->setResponse(new RedirectResponse('http://localhost:8080/medicos'));
