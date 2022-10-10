@@ -10,9 +10,11 @@ use App\Repository\EspecialidadeRepository;
 use App\Repository\MedicosRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Log\Logger;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -35,10 +37,11 @@ class MedicosController extends BaseController
         MedicosRepository $repository,
         EspecialidadeRepository $especialidadeRepository,
         EstratorDeDadosDoRequest $estratorDeDadosDoRequest,
-        CacheItemPoolInterface $cacheItemPool
+        CacheItemPoolInterface $cacheItemPool,
+        LoggerInterface $logger
     ) {
         //$this->factory = $medicoFactory;
-        parent::__construct($repository, $entityManager, $medicoFactory, $estratorDeDadosDoRequest, $cacheItemPool);
+        parent::__construct($repository, $entityManager, $medicoFactory, $estratorDeDadosDoRequest, $cacheItemPool, $logger);
         $this->especialidadeRepository = $especialidadeRepository;
     }
 

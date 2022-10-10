@@ -8,6 +8,7 @@ use App\Helper\ResponseFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +23,7 @@ abstract class BaseController extends AbstractController
     protected EntidadeFactory $entidadeFactory;
     private EstratorDeDadosDoRequest $estratorDeDadosDoRequest;
     private CacheItemPoolInterface $cacheItemPool;
+    private LoggerInterface $logger;
 
     public function __construct(
         ObjectRepository $repository,
@@ -29,12 +31,14 @@ abstract class BaseController extends AbstractController
         EntidadeFactory $entidadeFactory,
         EstratorDeDadosDoRequest $estratorDeDadosDoRequest,
         CacheItemPoolInterface $cacheItemPool,
+        LoggerInterface $logger,
     ) {
         $this->repository = $repository;
         $this->entityManager = $entityManager;
         $this->entidadeFactory = $entidadeFactory;
         $this->estratorDeDadosDoRequest = $estratorDeDadosDoRequest;
         $this->cacheItemPool = $cacheItemPool;
+        $this->logger = $logger;
     }
 
     /**
@@ -80,6 +84,14 @@ abstract class BaseController extends AbstractController
         );
         $cacheItem->set($entidade);
         $this->cacheItemPool->save($cacheItem);
+
+        $this->logger->notice(
+            'Novo registro de {entidade} adicionado com id: {id}',
+            [
+                'entidade' => get_class($entidade),
+                'id' => $entidade->getId(),
+            ]
+        );
 
         return new JsonResponse($entidade);
     }

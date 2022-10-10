@@ -10,6 +10,7 @@ use App\Repository\EspecialidadeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,11 +31,12 @@ class EspecialidadesController extends BaseController
         EspecialidadeRepository $especialidadeRepository,
         EspecialidadeFactory $especialidadeFactory,
         EstratorDeDadosDoRequest $estratorDeDadosDoRequest,
-        CacheItemPoolInterface $cacheItemPool
+        CacheItemPoolInterface $cacheItemPool,
+        LoggerInterface $logger
     ) {
         $this->doctrine = $doctrine;
         //$this->>doctrine->getRepository(Especialidade::class);
-        parent::__construct($especialidadeRepository, $entityManager, $especialidadeFactory, $estratorDeDadosDoRequest, $cacheItemPool);
+        parent::__construct($especialidadeRepository, $entityManager, $especialidadeFactory, $estratorDeDadosDoRequest, $cacheItemPool, $logger);
         //$this->factory = $especialidadeFactory;
     }
 
