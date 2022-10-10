@@ -42,21 +42,27 @@ class LoginController extends AbstractController
         }
 
         $user = $this->userRepository->findOneBy(["username" => $dadosEmJson->usuario]);
-        if(!$this->passwordHasher->isPasswordValid($user, $dadosEmJson->senha)) {
-            return new JsonResponse([
-                    'erro' => "Usuário ou senha invalidos",
-                ], Response::HTTP_UNAUTHORIZED,
+        if($user) {
+            if(!$this->passwordHasher->isPasswordValid($user, $dadosEmJson->senha)) {
+                return new JsonResponse([
+                        'erro' => "Usuário ou senha invalidos",
+                    ], Response::HTTP_UNAUTHORIZED,
+                );
+            }
+            $token = JWT::encode(
+                ['username' => $user->getUsername()],
+                'chave',
+                'HS256'
             );
+
+            return new JsonResponse([
+                "access_token" => $token,
+            ]);
         }
 
-        $token = JWT::encode(
-           ['username' => $user->getUsername()],
-           'chave',
-            'HS256'
-        );
-
         return new JsonResponse([
-            "access_token" => $token,
-        ]);
+                'erro' => "Usuário ou senha invalidos",
+            ], Response::HTTP_UNAUTHORIZED,
+        );
     }
 }
