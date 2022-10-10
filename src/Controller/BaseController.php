@@ -102,6 +102,10 @@ abstract class BaseController extends AbstractController
 
             $this->entityManager->flush();
 
+            $cacheItem = $this->cacheItemPool->getItem($this->cachePrefix() . $id);
+            $cacheItem->set($entity);
+            $this->cacheItemPool->save($cacheItem);
+
             $fabricaResposta = new ResponseFactory(
                 true,
                 conteudoResposta: $entity,
