@@ -155,6 +155,8 @@ abstract class BaseController extends AbstractController
         $this->entityManager->remove($object);
         $this->entityManager->flush();
 
+        $this->cacheItemPool->deleteItem($this->cachePrefix() . $id);
+
         return new Response('', Response::HTTP_NO_CONTENT);
     }
 
