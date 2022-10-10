@@ -48,7 +48,7 @@ class MedicoFactory implements EntidadeFactory
         if (!property_exists($dadoEmJson, 'crm')) {
             throw new EntityFactoryException('Médico precisa de crm');
         }
-        if (!property_exists($dadoEmJson, 'especialidade')) {
+        if (!property_exists($dadoEmJson, 'especialidade_id')) {
             throw new EntityFactoryException('Médico precisa de especialidade');
         }
     }
