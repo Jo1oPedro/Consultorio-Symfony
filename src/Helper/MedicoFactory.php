@@ -23,12 +23,7 @@ class MedicoFactory implements EntidadeFactory
     public function criaEntidade(string $json): Medico
     {
         $dadoEmJson = json_decode($json);
-        if(!property_exists($dadoEmJson, 'nome') ||
-            !property_exists($dadoEmJson, 'crm') ||
-            !property_exists($dadoEmJson, 'especialidadeId')
-        ) {
-            throw new EntityFactoryException('Médico precisa de nome, CRM e especialidade');
-        }
+        $this->checkAllProperties($dadoEmJson);
         $especialidade_id = $dadoEmJson->especialidade_id;
         $especialidade = $this->especialidadeRepository->find($especialidade_id);
         $medico = new Medico();
@@ -38,6 +33,24 @@ class MedicoFactory implements EntidadeFactory
             ->setEspecialidade($especialidade);
 
         return $medico;
+    }
+
+    /**
+     * @param mixed $dadoEmJson
+     * @return void
+     * @throws EntityFactoryException
+     */
+    private function checkAllProperties(mixed $dadoEmJson): void
+    {
+        if (!property_exists($dadoEmJson, 'nome')) {
+            throw new EntityFactoryException('Médico precisa de nome');
+        }
+        if (!property_exists($dadoEmJson, 'crm')) {
+            throw new EntityFactoryException('Médico precisa de crm');
+        }
+        if (!property_exists($dadoEmJson, 'especialidade')) {
+            throw new EntityFactoryException('Médico precisa de especialidade');
+        }
     }
 
 }
