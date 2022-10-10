@@ -9,6 +9,7 @@ use App\Helper\EstratorDeDadosDoRequest;
 use App\Repository\EspecialidadeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,10 +30,11 @@ class EspecialidadesController extends BaseController
         EspecialidadeRepository $especialidadeRepository,
         EspecialidadeFactory $especialidadeFactory,
         EstratorDeDadosDoRequest $estratorDeDadosDoRequest,
+        CacheItemPoolInterface $cacheItemPool
     ) {
         $this->doctrine = $doctrine;
         //$this->>doctrine->getRepository(Especialidade::class);
-        parent::__construct($especialidadeRepository, $entityManager, $especialidadeFactory, $estratorDeDadosDoRequest);
+        parent::__construct($especialidadeRepository, $entityManager, $especialidadeFactory, $estratorDeDadosDoRequest, $cacheItemPool);
         //$this->factory = $especialidadeFactory;
     }
 
@@ -131,5 +133,10 @@ class EspecialidadesController extends BaseController
     ): \JsonSerializable {
         $dadosEmJson = json_decode($request->getContent());
         return $entidadeExistente->setDescricao($dadosEmJson->descricao);
+    }
+
+    public function cachePrefix(): string
+    {
+        return 'especialidade_';
     }
 }

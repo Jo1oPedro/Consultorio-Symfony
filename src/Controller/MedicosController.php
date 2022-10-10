@@ -9,6 +9,7 @@ use App\Helper\MedicoFactory;
 use App\Repository\EspecialidadeRepository;
 use App\Repository\MedicosRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,10 +34,11 @@ class MedicosController extends BaseController
         MedicoFactory $medicoFactory,
         MedicosRepository $repository,
         EspecialidadeRepository $especialidadeRepository,
-        EstratorDeDadosDoRequest $estratorDeDadosDoRequest
+        EstratorDeDadosDoRequest $estratorDeDadosDoRequest,
+        CacheItemPoolInterface $cacheItemPool
     ) {
         //$this->factory = $medicoFactory;
-        parent::__construct($repository, $entityManager, $medicoFactory, $estratorDeDadosDoRequest);
+        parent::__construct($repository, $entityManager, $medicoFactory, $estratorDeDadosDoRequest, $cacheItemPool);
         $this->especialidadeRepository = $especialidadeRepository;
     }
 
@@ -166,5 +168,10 @@ class MedicosController extends BaseController
         return $entidadeExistente->setNome($dadosEmJson->nome)
                         ->setCrm($dadosEmJson->crm)
                         ->setEspecialidade($especialidade);
+    }
+
+    public function cachePrefix(): string
+    {
+        return 'medico_';
     }
 }

@@ -7,6 +7,7 @@ use App\Helper\EstratorDeDadosDoRequest;
 use App\Helper\ResponseFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,17 +21,20 @@ abstract class BaseController extends AbstractController
     protected EntityManagerInterface $entityManager;
     protected EntidadeFactory $entidadeFactory;
     private EstratorDeDadosDoRequest $estratorDeDadosDoRequest;
+    private CacheItemPoolInterface $cacheItemPool;
 
     public function __construct(
         ObjectRepository $repository,
         EntityManagerInterface $entityManager,
         EntidadeFactory $entidadeFactory,
         EstratorDeDadosDoRequest $estratorDeDadosDoRequest,
+        CacheItemPoolInterface $cacheItemPool,
     ) {
         $this->repository = $repository;
         $this->entityManager = $entityManager;
         $this->entidadeFactory = $entidadeFactory;
         $this->estratorDeDadosDoRequest = $estratorDeDadosDoRequest;
+        $this->cacheItemPool = $cacheItemPool;
     }
 
     /**
@@ -70,6 +74,12 @@ abstract class BaseController extends AbstractController
         $entidade = $this->entidadeFactory->criaEntidade($request->getContent());
         $this->entityManager->persist($entidade);
         $this->entityManager->flush();
+
+        $cacheItem = $this->cacheItemPool->getItem(
+            $this->cachePrefix() . $entidade->getId()
+        );
+        $cacheItem->set($entidade);
+        $this->cacheItemPool->save($cacheItem);
 
         return new JsonResponse($entidade);
     }
@@ -117,7 +127,9 @@ abstract class BaseController extends AbstractController
      */
     public function show(int $id): Response
     {
-        $entity = $this->repository->find($id);
+        $entity = $this->cacheItemPool->hasItem($this->cachePrefix() . $id) ?
+            $this->cacheItemPool->getItem($this->cachePrefix() . $id)->get() :
+            $this->repository->find($id);
         $statusResposta = is_null($entity)
             ? Response::HTTP_NOT_FOUND
             : Response::HTTP_OK;
@@ -147,5 +159,5 @@ abstract class BaseController extends AbstractController
     }
 
     abstract public function atualizaEntidadeExistente(\JsonSerializable $entidadeExistente,Request $request): \JsonSerializable;
-
+    abstract public function cachePrefix(): string;
 }
