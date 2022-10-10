@@ -23,6 +23,12 @@ class MedicoFactory implements EntidadeFactory
     public function criaEntidade(string $json): Medico
     {
         $dadoEmJson = json_decode($json);
+        if(!property_exists($dadoEmJson, 'nome') ||
+            !property_exists($dadoEmJson, 'crm') ||
+            !property_exists($dadoEmJson, 'especialidadeId')
+        ) {
+            throw new EntityFactoryException('Médico precisa de nome, CRM e especialidade');
+        }
         $especialidade_id = $dadoEmJson->especialidade_id;
         $especialidade = $this->especialidadeRepository->find($especialidade_id);
         $medico = new Medico();
